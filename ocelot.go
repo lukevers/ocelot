@@ -8,7 +8,7 @@ import (
 
 var (
 	l *log.Logger
-	LogLevel = Log.LogLevel(log.INFO)
+	LogLevel = log.LogLevel(log.INFO)
 	LogFlags = log.Ldate | log.Ltime
 	LogFile  = os.Stdout
 )
@@ -31,6 +31,5 @@ func main() {
 	
 	// Do shit here!
 	
-	
-	
+	Serve(config)
 }
