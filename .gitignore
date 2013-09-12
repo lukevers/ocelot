@@ -1,0 +1,10 @@
+# Configuration Files
+config.json
+
+# Binaries
+ocelot
+
+# Editor temporary files
+*~
+\#*
+.\#*
