@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"os"
-	_"net"
 )
 
 type Config struct {
