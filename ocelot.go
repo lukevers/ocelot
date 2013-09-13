@@ -29,7 +29,6 @@ func main() {
 		os.Exit(1)
 	}
 	
-	// Do shit here!
-	
+	// Start the server
 	Serve(config)
 }
