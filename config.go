@@ -3,14 +3,20 @@ package main
 import (
 	"encoding/json"
 	"os"
+	_"net"
 )
 
 type Config struct {
 	
-	// Port is an integer that defines what port to run the
-	// webserver for ocelot on
-	Port int
+	// Address contains the interface, and port all in one to save
+	// time instead of combinding multiple variables into one. For
+	// example: interface:port
+	Address string
 	
+	// Netmask is for determining if the incoming address is the
+	// same type of netmask that it should be in order to sign in
+	// and sign up.
+	Netmask string
 }
 
 // ReadConfig reads the configuration file from JSON and returns it in
