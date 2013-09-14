@@ -3,7 +3,8 @@ package main
 import (
 	"net/http"
 	"net"
-	"fmt"
+	"html/template"
+	_ "fmt"
 )
 
 var (
@@ -31,17 +32,17 @@ func Serve(config *Config) {
 }
 
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
-	addr, hype, err := VerifyNetmask(Netmask, r.RemoteAddr)
-	r.RemoteAddr = addr
+	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
-		l.Noticef("Verify netmask error: %s", err)
+		l.Noticef("SplitHostPort error: %s", err)
 	}
 
 	// Now do hype/non-hype related things!
-	if hype {
-		fmt.Fprintf(w, "Hello, %q, you are on hype!", r.RemoteAddr)
+	if VerifyNetmask(Netmask, r.RemoteAddr) {
+		//fmt.Fprintf(w, "Hello, %q, you are on hype!", r.RemoteAddr)
+		
 	} else {
-		fmt.Fprint(w, "You are not on hype!")
+		//fmt.Fprint(w, "You are not on hype!")
 	}
 }
 
