@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net"
+	"fmt"
 )
 
 var (
@@ -10,6 +11,8 @@ var (
 	err error
 )
 
+// Serve takes the options from the configuration file and starts up
+// the servers.
 func Serve(config *Config) {	
 
 	_, Netmask, err = net.ParseCIDR(config.Netmask)
@@ -28,10 +31,17 @@ func Serve(config *Config) {
 }
 
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
-	if VerifyNetmask(Netmask, r.RemoteAddr[1:40]) {
-		
+	addr, hype, err := VerifyNetmask(Netmask, r.RemoteAddr)
+	r.RemoteAddr = addr
+	if err != nil {
+		l.Noticef("Verify netmask error: %s", err)
+	}
+
+	// Now do hype/non-hype related things!
+	if hype {
+		fmt.Fprintf(w, "Hello, %q, you are on hype!", r.RemoteAddr)
 	} else {
-		
+		fmt.Fprint(w, "You are not on hype!")
 	}
 }
 
