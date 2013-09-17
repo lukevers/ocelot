@@ -4,13 +4,22 @@ import (
 	"net/http"
 	"net"
 	"html/template"
-	_ "fmt"
 )
 
 var (
 	Netmask *net.IPNet
 	err error
+	templates *template.Template
 )
+
+type Page struct {
+	User *User
+}
+
+type User struct {
+	IPv6 string
+	Name string
+}
 
 // Serve takes the options from the configuration file and starts up
 // the servers.
@@ -36,13 +45,19 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		l.Noticef("SplitHostPort error: %s", err)
 	}
-
+	
+	templates = template.Must(template.ParseGlob("templates/*"))
+	
+	
 	// Now do hype/non-hype related things!
 	if VerifyNetmask(Netmask, r.RemoteAddr) {
-		//fmt.Fprintf(w, "Hello, %q, you are on hype!", r.RemoteAddr)
-		
+	
+		templates.ExecuteTemplate(w, "index", nil)
+	
 	} else {
-		//fmt.Fprint(w, "You are not on hype!")
+		
+		templates.ExecuteTemplate(w, "nohype", nil)
+
 	}
 }
 
