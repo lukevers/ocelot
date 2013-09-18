@@ -49,15 +49,12 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	templates = template.Must(template.ParseGlob("templates/*"))
 	
 	
+
 	// Now do hype/non-hype related things!
 	if VerifyNetmask(Netmask, r.RemoteAddr) {
-	
 		templates.ExecuteTemplate(w, "index", nil)
-	
 	} else {
-		
-		templates.ExecuteTemplate(w, "nohype", nil)
-
+		templates.ExecuteTemplate(w, "index", nil)
 	}
 }
 

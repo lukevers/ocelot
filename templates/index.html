@@ -2,12 +2,38 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="utf-8">
     <title>Ocelot</title>
     {{ template "styles" . }}
     {{ template "scripts" . }}
   </head>
   <body>
-    hello
+    <div class="centered">
+      <form class="sign">
+	<div class="top"></div>
+	<div class="section accent">
+	  Name
+	</div>
+	<div class="section shared-line">
+	  <input type="text" id="fname" placeholder="First Name">
+	  <input type="text" id="lname" placeholder="Last Name">
+	</div>
+	<div class="section accent">
+	  Description
+	</div>
+	<div class="section">
+	  <input type="text" id="merp" placeholder="Description of yourself">
+	</div>
+	<div class="bottom section">
+	  <div class="button red">
+	    <span class="icon-users"></span>&nbsp;Join
+	  </div>
+	  <div class="button green">
+	    Cancel
+	  </div>
+	</div>
+      </form>
+    </div>
   </body>
 </html>
 {{ end }}
