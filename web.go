@@ -51,9 +51,16 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 		if VerifiedUser(r.RemoteAddr) {
 			templates.ExecuteTemplate(w, "index", nil)
 		} else {
-			templates.ExecuteTemplate(w, "signup", nil)
+			// Create a temporary struct to put the
+			// address into the form to create an account.
+			type Address struct {
+				Address string
+			}
+			templates.ExecuteTemplate(w, "signup", 
+				&Address{Address: r.RemoteAddr})
 		}
 	} else {
+		// Show a blank page for non-hype right now.
 		templates.ExecuteTemplate(w, "nohype", nil)
 	}
 }

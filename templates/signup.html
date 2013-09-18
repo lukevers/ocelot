@@ -6,6 +6,7 @@
     <title>Ocelot</title>
     {{ template "styles" . }}
     {{ template "scripts" . }}
+    <script type="text/javascript" src="/assets/js/signup.js"></script>
   </head>
   <body>
     <div class="centered">
@@ -28,13 +29,14 @@
 	  Website
 	</div>
 	<div class="section">
-	  <input type="text" id="website" placeholder="http://you.tld">
+	  <input type="text" id="website" placeholder="Optional">
+	  <input type="text" id="address" value="{{ .Address }}" class="hidden">
 	</div>
 	<div class="bottom section">
-	  <div class="button red">
+	  <div class="button red" id="join">
 	    <span class="icon-users"></span>&nbsp;Join
 	  </div>
-	  <div class="button green">
+	  <div class="button green" id="cancel">
 	    Cancel
 	  </div>
 	</div>
