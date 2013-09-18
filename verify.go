@@ -20,6 +20,10 @@ func VerifiedUser(address string) (bool, *User) {
 	if err != nil {
 		return false, nil
 	}
-
-	return true, user
+	
+	if user != nil {
+		return true, user
+	}
+	
+	return false, nil
 }
