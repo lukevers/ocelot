@@ -10,3 +10,12 @@ import (
 func VerifyNetmask(netmask *net.IPNet, address string) bool {
 	return netmask.Contains(net.ParseIP(address))
 }
+
+// VerifiedUser checks if the user exists in the database. If the user
+// exists then we return true, else false. VerifyNetmask will always
+// be called before we run this function, so we don't have to check
+// the netmask again before checking if the user exists.
+func VerifiedUser(address string) bool {
+	
+	return false
+}

@@ -12,15 +12,6 @@ var (
 	templates *template.Template
 )
 
-type Page struct {
-	User *User
-}
-
-type User struct {
-	IPv6 string
-	Name string
-}
-
 // Serve takes the options from the configuration file and starts up
 // the servers.
 func Serve(config *Config) {	
@@ -40,6 +31,12 @@ func Serve(config *Config) {
 	}
 }
 
+// HandleRoot is the default handler that figures out if you're
+// already signed up or not. If you're not on Hyperboria, you can't do
+// anything. If you're on Hyperboria and you're not signed up yet,
+// it'll give you the signup page. If you're on Hyperboria and you're
+// already signed up, it'll automatically sign you in and show you the
+// front page.
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -47,14 +44,17 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	}
 	
 	templates = template.Must(template.ParseGlob("templates/*"))
-	
-	
 
-	// Now do hype/non-hype related things!
+	// If we are not on Hyperboria, send them to the "nohype"
+	// page. If we are, check if we are a user yet.
 	if VerifyNetmask(Netmask, r.RemoteAddr) {
-		templates.ExecuteTemplate(w, "index", nil)
+		if VerifiedUser(r.RemoteAddr) {
+			templates.ExecuteTemplate(w, "index", nil)
+		} else {
+			templates.ExecuteTemplate(w, "signup", nil)
+		}
 	} else {
-		templates.ExecuteTemplate(w, "index", nil)
+		templates.ExecuteTemplate(w, "nohype", nil)
 	}
 }
 
