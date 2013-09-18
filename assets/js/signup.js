@@ -1,6 +1,16 @@
 $(document).ready(function() {
     $('#join').bind('click', join);
     $('#cancel').bind('click', cancel);
+    $('#fname').bind('keyup', function() {
+	if ($('#fname').val() == "") { 
+	    $('#fname').addClass('empty'); 
+	} else $('#fname').removeClass('empty'); 
+    });
+    $('#lname').bind('keyup', function() {
+	if ($('#lname').val() == "") {
+	    $('#lname').addClass('empty');
+	} else $('#lname').removeClass('empty'); 
+    });
 });
 
 // The function join takes all of the variables and submits them via

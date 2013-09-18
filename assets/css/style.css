@@ -63,7 +63,7 @@ body {
 }
 
 .section input[type=text] {
-    border: 1px solid #EEE;
+    border: 2px solid #EEE;
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     border-radius: 4px;
@@ -74,6 +74,10 @@ body {
 
 .section.shared-line input[type=text] {
     width: 160px;
+}
+
+.empty {
+    border: 2px solid #e74c3c !important;
 }
 
 .button {

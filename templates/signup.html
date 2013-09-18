@@ -16,20 +16,20 @@
 	  Name
 	</div>
 	<div class="section shared-line">
-	  <input type="text" id="fname" placeholder="First Name">
-	  <input type="text" id="lname" placeholder="Last Name">
+	  <input type="text" id="fname" placeholder="First Name" maxlength="127">
+	  <input type="text" id="lname" placeholder="Last Name" maxlength="128">
 	</div>
 	<div class="section accent">
 	  Description
 	</div>
 	<div class="section">
-	  <input type="text" id="desc" placeholder="Description of yourself">
+	  <input type="text" id="desc" placeholder="Description of yourself" maxlength="255">
 	</div>
 	<div class="section accent">
 	  Website
 	</div>
 	<div class="section">
-	  <input type="text" id="website" placeholder="Optional">
+	  <input type="text" id="website" placeholder="Optional" maxlength="255">
 	  <input type="text" id="address" value="{{ .Address }}" class="hidden">
 	</div>
 	<div class="bottom section">
