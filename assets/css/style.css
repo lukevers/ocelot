@@ -8,8 +8,9 @@ body {
     background-color: #EEE;
 }
 
-
-/* ==== SIGN UP/IN ==== */
+a {
+    text-decoration: none;
+}
 
 .hidden {
     display: none;
@@ -103,4 +104,41 @@ body {
 
 .button.green:active {
     background-color: #27ae60;
+}
+
+.button.blue {
+    background-color: #3498db;
+    color: #FFF;
+}
+
+.button.blue:active {
+    background-color: #2980b9;
+}
+
+.button.purple {
+    background-color: #9b59b6;
+    color: #FFF
+}
+
+.button.purple:active {
+    background-color: #8e44ad;
+}
+
+#home {
+    position: absolute;
+}
+
+#settings {
+    position: absolute;
+    top: 50px;
+}
+
+#me {
+    position: absolute;
+    top: 100px;
+}
+
+#create {
+    position: absoltue;
+    top: 150px;
 }
