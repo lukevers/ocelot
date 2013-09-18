@@ -14,20 +14,34 @@ $(document).ready(function() {
 });
 
 // The function join takes all of the variables and submits them via
-// an ajax request to /post/newuser.
+// an ajax request to /api/newuser.
 function join() {
     $.ajax({
 	type: 'POST',
-	url: '/post/newuser',
+	url: '/api/token',
 	data: {
-	    'fname': $('#fname').val(),
-	    'lname': $('#lname').val(),
-	    'desc': $('#desc').val(),
-	    'website': $('#website').val(),
 	    'address': $('#address').val()
 	},
-	success: function(response) {
-	    alert(response);
+	success: function(token) {
+	    $.ajax({
+		type: 'POST',
+		url: '/api/newuser',
+		data: {
+		    'fname': $('#fname').val(),
+		    'lname': $('#lname').val(),
+		    'desc': $('#desc').val(),
+		    'website': $('#website').val(),
+		    'address': $('#address').val(),
+		    'token': token
+		},
+		success: function(response) {
+		    alert(response);
+		},
+		error: function(response) {
+		    // The only time this should error is if the server stops.
+		    // TODO write error
+		}
+	    });
 	},
 	error: function(response) {
 	    // The only time this should error is if the server stops.
