@@ -64,8 +64,9 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	// If we are not on Hyperboria, send them to the "nohype"
 	// page. If we are, check if we are a user yet.
 	if VerifyNetmask(Netmask, r.RemoteAddr) {
-		if VerifiedUser(r.RemoteAddr) {
-			templates.ExecuteTemplate(w, "index", nil)
+		exists, user := VerifiedUser(r.RemoteAddr)
+		if exists {
+			templates.ExecuteTemplate(w, "index", &user)
 		} else {
 			// Create a temporary struct to put the
 			// address into the form to create an account.

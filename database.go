@@ -55,3 +55,33 @@ VALUES(?, ?, ?, ?, ?)`)
 	defer u.Close()
 	return
 }
+
+//
+func (db DB) GetUser(address string) (user *User, err error) {
+	// Prepare database
+	u, err := db.Prepare(`
+SELECT name, description, website
+FROM users
+WHERE address = ?
+LIMIT 1`)
+	if err != nil {
+		return
+	}
+	
+	user = &User{Address: address}
+	baddr := []byte(address)
+	
+	// Query database
+	row := u.QueryRow(baddr)
+	err = row.Scan(&user.Name, &user.Description, &user.Website)
+	defer u.Close()
+	
+	// If the error is of the particular type sql.ErrNoRows, it
+	// simply means that the node does not exist. In that case,
+	// return (nil, nil).
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	
+	return
+}

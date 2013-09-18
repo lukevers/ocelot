@@ -15,7 +15,11 @@ func VerifyNetmask(netmask *net.IPNet, address string) bool {
 // exists then we return true, else false. VerifyNetmask will always
 // be called before we run this function, so we don't have to check
 // the netmask again before checking if the user exists.
-func VerifiedUser(address string) bool {
-	
-	return false
+func VerifiedUser(address string) (bool, *User) {	
+	user, err := Db.GetUser(address)
+	if err != nil {
+		return false, nil
+	}
+
+	return true, user
 }

@@ -1,0 +1,17 @@
+{{ define "index" }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Ocelot</title>
+    {{ template "styles" . }}
+    {{ template "scripts" . }}
+    <script type="text/javascript" src="/assets/js/cog.js"></script>
+  </head>
+  <body>
+    <div class="button red" id="settings">
+      <span class="icon-cog"></span>
+    </div>
+  </body>
+</html>
+{{ end }}
