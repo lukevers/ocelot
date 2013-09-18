@@ -8,3 +8,6 @@ ocelot
 *~
 \#*
 .\#*
+
+# Database files
+*.db
