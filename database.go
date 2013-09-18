@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	_ "code.google.com/p/go-sqlite/go1/sqlite3"
+	"time"
 )
 
 var (
@@ -28,12 +29,29 @@ updated INT NOT NULL);`)
 }
 
 // LengthUsers counts all of the users in the database. If there is an
-// error it returns -1
+// error it returns -1.
 func (db DB) LengthUsers() (length int) {
 	row := db.QueryRow("SELECT COUNT(*) FROM users;")
 	if err := row.Scan(&length); err != nil {
 		l.Errf("Error counting number of users: %s", err)
 		length = -1
 	}
+	return
+}
+
+// AddUser adds a new user to the database. If there is an error it
+// returns the error.
+func (db DB) AddUser(user *User) (err error) {
+	// Prepare database
+	u, err := db.Prepare(`INSERT INTO users
+(address, name, description, website, updated)
+VALUES(?, ?, ?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	// Insert values
+	_, err = u.Exec([]byte(user.Address), user.Name, user.Description,
+		user.Website, time.Now())
+	defer u.Close()
 	return
 }

@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net"
 	"html/template"
+	"fmt"
 )
 
 var (
@@ -15,15 +16,20 @@ var (
 // Serve takes the options from the configuration file and starts up
 // the servers.
 func Serve(config *Config) {	
-
+	// Check Netmask
 	_, Netmask, err = net.ParseCIDR(config.Netmask)
 	if err != nil {
 		l.Fatalf("Could not parse netmask error: %s", err)
 	}
-
+	
+	// Handle normal pages
 	http.HandleFunc("/", HandleRoot)
 	http.HandleFunc("/assets/", HandleAssets)
 
+	// Handle POSTs
+	http.HandleFunc("/post/newuser", HandleNewUser)
+
+	// Start server
 	l.Infof("Starting server on %s", config.Address)
 	err = http.ListenAndServe(config.Address, nil)
 	if err != nil {
@@ -69,4 +75,36 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 // assets directory.
 func HandleAssets(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, r.URL.Path[1:])
+}
+
+func HandleNewUser(w http.ResponseWriter, r *http.Request) {
+	fname := r.FormValue("fname")
+	lname := r.FormValue("lname")
+	u := &User{
+		Address: r.FormValue("address"),
+		Name: CreateFullName(fname, lname),
+		Description: r.FormValue("desc"),
+		Website: r.FormValue("website"),
+	}
+	
+	if !VerifyNetmask(Netmask, u.Address) {
+		fmt.Fprintf(w, "Error: Address does not match netmask")
+	} else if u.Name == " " {
+		fmt.Fprintf(w, "Error: Name can not be empty")
+	} else if len(u.Name) > 255 {
+		fmt.Fprintf(w, "Error: Name can not be longer than 255 characters")
+	} else if len(u.Description) > 255 {
+		fmt.Fprintf(w, "Error: Description can not be longer than 255 characters")
+	} else if len(u.Website) > 255 {
+		fmt.Fprintf(w, "Error: Website can not be longer than 255 characters")
+	} else {
+		err := Db.AddUser(u)
+		if err != nil {
+			l.Emergf("Could not add user to database: %s", err)
+			fmt.Fprintf(w, "Error: %s", GetDetailedError(err))
+		} else {
+			fmt.Fprintf(w, "Success: User added")
+			l.Infof("User %s added to database", u.Name)
+		}
+	}
 }
