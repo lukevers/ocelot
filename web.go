@@ -171,7 +171,28 @@ func HandleMe(w http.ResponseWriter, r *http.Request) {
 
 // HandleCreate is the handler for the /create page
 func HandleCreate(w http.ResponseWriter, r *http.Request) {
-
+	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		l.Noticef("SplitHostPort error: %s", err)
+	}
+	
+	templates = template.Must(template.ParseGlob("templates/*"))
+	
+	// If we are not signed in and on Hyperboria send to the
+	// signup page. If we are not signed in and not on Hyperboria
+	// send to the no access page.
+	if VerifyNetmask(Netmask, r.RemoteAddr) {
+		exists, user := VerifiedUser(r.RemoteAddr)
+		if exists {
+			templates.ExecuteTemplate(w, "create", &user)
+		} else {
+			// Redirect to signup page
+			SignUp(w, r.RemoteAddr, templates)
+		}
+	} else {
+		// Redirect to no access page
+		NoAccess(w, templates)
+	}
 }
 
 // SignUp is a redirect to the signup page
