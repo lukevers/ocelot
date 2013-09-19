@@ -26,6 +26,9 @@ func Serve(config *Config) {
 	// Handle normal pages
 	http.HandleFunc("/", HandleRoot)
 	http.HandleFunc("/assets/", HandleAssets)
+	http.HandleFunc("/settings", HandleSettings)
+	http.HandleFunc("/me", HandleMe)
+	http.HandleFunc("/create", HandleCreate)
 
 	// Handle API points
 	http.HandleFunc("/api/newuser", HandleNewUser)
@@ -39,12 +42,7 @@ func Serve(config *Config) {
 	}
 }
 
-// HandleRoot is the default handler that figures out if you're
-// already signed up or not. If you're not on Hyperboria, you can't do
-// anything. If you're on Hyperboria and you're not signed up yet,
-// it'll give you the signup page. If you're on Hyperboria and you're
-// already signed up, it'll automatically sign you in and show you the
-// front page.
+// HandleRoot is the handler for the general / page
 func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
@@ -60,17 +58,12 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 		if exists {
 			templates.ExecuteTemplate(w, "index", &user)
 		} else {
-			// Create a temporary struct to put the
-			// address into the form to create an account.
-			type Address struct {
-				Address string
-			}
-			templates.ExecuteTemplate(w, "signup", 
-				&Address{Address: r.RemoteAddr})
+			// Redirect to the signup page
+			SignUp(w, r.RemoteAddr, templates)
 		}
 	} else {
-		// Show a blank page for non-hype right now.
-		templates.ExecuteTemplate(w, "nohype", nil)
+		// Redirect to the no access page
+		NoAccess(w, templates)
 	}
 }
 
@@ -122,4 +115,55 @@ func HandleNewUser(w http.ResponseWriter, r *http.Request) {
 			l.Infof("User %s added to database", u.Name)
 		}
 	}
+}
+
+// HandleSettings is the handler for the /settings page
+func HandleSettings(w http.ResponseWriter, r *http.Request) {
+	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		l.Noticef("SplitHostPort error: %s", err)
+	}
+	
+	templates = template.Must(template.ParseGlob("templates/*"))
+	
+	// If we are not signed in and on Hyperboria send to the
+	// signup page. If we are not signed in and not on Hyperboria
+	// send to the nohype page.
+	if VerifyNetmask(Netmask, r.RemoteAddr) {
+		exists, user := VerifiedUser(r.RemoteAddr)
+		if exists {
+			templates.ExecuteTemplate(w, "settings", &user)
+		} else {
+			// Redirect to signup page
+			SignUp(w, r.RemoteAddr, templates)
+		}
+	} else {
+		// Redirect to no access page
+		NoAccess(w, templates)
+	}
+}
+
+// HandleMe is the handler for the /me page
+func HandleMe(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// HandleCreate is the handler for the /create page
+func HandleCreate(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// SignUp is a redirect to the signup page
+func SignUp(w http.ResponseWriter, address string, templates *template.Template) {
+	// Create a temporary struct to put the address into the form
+	// to create an account.
+	type Address struct {
+		Address string
+	}
+	templates.ExecuteTemplate(w, "signup", &Address{Address: address})
+}
+
+// NoAccess is a redirect to the noaccess page
+func NoAccess(w http.ResponseWriter, templates *template.Template) {
+	templates.ExecuteTemplate(w, "nohype", nil)
 }
