@@ -54,7 +54,8 @@ func main() {
 		l.Fatalf("Could not initalize tables: %s", err)
 	}
 	l.Info("Initialized database")
-	l.Info("Number of users: ", Db.LengthUsers())
+	l.Info("Number of users: ", Db.Length("users"))
+	l.Info("Number of posts: ", Db.Length("posts"))
 
 	// Start the server
 	Serve(config)

@@ -24,16 +24,26 @@ name VARCHAR(255) NOT NULL,
 description VARCHAR(255),
 website VARCHAR(255),
 updated INT NOT NULL);`)
+	if err != nil {
+		return
+	}
+
+	_, err = db.Query(`CREATE TABLE IF NOT EXISTS posts (
+title VARCHAR(255) PRIMARY KEY,
+address BINARY(16) NOT NULL,
+description VARCHAR(255) NOT NULL,
+posted INT NOT NULL);`)
 	
 	return
 }
 
-// LengthUsers counts all of the users in the database. If there is an
-// error it returns -1.
-func (db DB) LengthUsers() (length int) {
-	row := db.QueryRow("SELECT COUNT(*) FROM users;")
+// Lengh counts all of the `x` in the database. Depending on what you
+// want to count. You call the Length func by giving the table name as
+// a parameter.
+func (db DB) Length(table string) (length int) {
+	row := db.QueryRow("SELECT COUNT(*) FROM "+table+";")
 	if err := row.Scan(&length); err != nil {
-		l.Errf("Error counting number of users: %s", err)
+		l.Errf("Error counting number of %s: %s", table, err)
 		length = -1
 	}
 	return
@@ -56,7 +66,9 @@ VALUES(?, ?, ?, ?, ?)`)
 	return
 }
 
-//
+// GetUser checks the users table in the database for a user. If the
+// user is there, it returns a *User and and a nil error. It will
+// return an actual error and a nil *User if there are errors.
 func (db DB) GetUser(address string) (user *User, err error) {
 	// Prepare database
 	u, err := db.Prepare(`
