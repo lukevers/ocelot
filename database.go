@@ -29,7 +29,8 @@ updated INT NOT NULL);`)
 	}
 
 	_, err = db.Query(`CREATE TABLE IF NOT EXISTS posts (
-title VARCHAR(255) PRIMARY KEY,
+id INT PRIMARY KEY,
+title VARCHAR(255) NOT NULL,
 address BINARY(16) NOT NULL,
 description VARCHAR(255) NOT NULL,
 posted INT NOT NULL);`)
@@ -59,9 +60,28 @@ VALUES(?, ?, ?, ?, ?)`)
 	if err != nil {
 		return
 	}
+
 	// Insert values
 	_, err = u.Exec([]byte(user.Address), user.Name, user.Description,
 		user.Website, time.Now())
+	defer u.Close()
+	return
+}
+
+// AddPost adds a new post to the database. If there is an error it
+// returns the error.
+func (db DB) AddPost(post *Post) (err error) {
+	// Prepare Database
+	u, err := db.Prepare(`INSERT INTO posts
+(id, title, address, description, posted)
+VALUES(?, ?, ?, ?, ?)`)
+	if err != nil {
+		return
+	}
+	
+	// Insert values
+	_, err = u.Exec((Db.Length("posts")+1), post.Title, 
+		[]byte(post.User.Address), post.Description, time.Now())
 	defer u.Close()
 	return
 }
@@ -88,12 +108,48 @@ LIMIT 1`)
 	err = row.Scan(&user.Name, &user.Description, &user.Website)
 	defer u.Close()
 	
-	// If the error is of the particular type sql.ErrNoRows, it
-	// simply means that the node does not exist. In that case,
-	// return (nil, nil).
+	// If this is true then the user does not exist.
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
+	
+	return
+}
+
+func (db DB) GetPost(id int) (post *Post, err error) {
+	// Prepare database
+	u, err := db.Prepare(`
+SELECT title, address, description, posted
+FROM posts
+WHERE id = ?
+LIMIT 1`)
+	if err != nil {
+		return
+	}
+	
+	// Get address ready to find the user
+	var address []byte
+
+	// Give the *Post the ID it is
+	post.ID = id
+
+	// Query database 
+	row := u.QueryRow(id)
+	err = row.Scan(&post.Title, address, &post.Description, &post.Posted) 
+	defer u.Close()
+
+	// If this is true then the post does not exist.
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+
+	// Now get the *User for the *Post
+	post.User, err = Db.GetUser(string(address))
+	if err != nil {
+		return
+	}
+	
+	// TODO: get the body of the post
 	
 	return
 }

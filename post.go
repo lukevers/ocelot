@@ -5,6 +5,7 @@ import (
 )
 
 type Post struct {
+	ID          int
 	Title       string
 	User        *User
 	Description string
