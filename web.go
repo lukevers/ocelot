@@ -95,13 +95,17 @@ func HandleNewUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		l.Emergf("Could not parse token to uint: %s", err)
 	}
-	
+
 	if !CheckToken(r.FormValue("address"), uint32(t)) {
 		fmt.Fprintf(w, "Error: Token invalid")
 	} else if !VerifyNetmask(Netmask, u.Address) {
 		fmt.Fprintf(w, "Error: Address does not match netmask")
 	} else if u.Name == " " {
 		fmt.Fprintf(w, "Error: Name can not be empty")
+	} else if fname == "" || fname == " " {
+		fmt.Fprintf(w, "Error: First name can not be empty")
+	} else if lname == "" || lname == " " {
+		fmt.Fprintf(w, "Error: Last name can not be empty")
 	} else if len(u.Name) > 255 {
 		fmt.Fprintf(w, "Error: Name can not be longer than 255 characters")
 	} else if len(u.Description) > 255 {

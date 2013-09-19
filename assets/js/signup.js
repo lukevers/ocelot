@@ -35,7 +35,7 @@ function join() {
 		    'token': token
 		},
 		success: function(response) {
-		    alert(response);
+		    notifyMe(response);
 		},
 		error: function(response) {
 		    // The only time this should error is if the server stops.
@@ -58,4 +58,20 @@ function cancel() {
     $('#desc').val("");
     $('#website').val("");
     $('#lname, #fname').removeClass('empty');
+}
+
+// The function notifyMe creates a notification in the top right
+// corner of the screen telling you what happened with your request.
+function notifyMe(what) {
+    $('body').append('<div id="notify">'+what+'</div>');
+    $('#notify').fadeIn(500);
+    setTimeout(function() {
+	$('#notify').fadeOut(500, function() {
+	    $('#notify').remove();
+	    if (what.indexOf("Success") != -1) {
+		location.reload();
+	    }
+	});
+    }, 3000);
+    
 }
