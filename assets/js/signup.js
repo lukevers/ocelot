@@ -57,4 +57,5 @@ function cancel() {
     $('#lname').val("");
     $('#desc').val("");
     $('#website').val("");
+    $('#lname, #fname').removeClass('empty');
 }

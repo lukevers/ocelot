@@ -100,6 +100,8 @@ LIMIT 1`)
 		return
 	}
 	
+	// Convert the address into a byte array so we can search for
+	// it in the database.
 	user = &User{Address: address}
 	baddr := []byte(address)
 	
