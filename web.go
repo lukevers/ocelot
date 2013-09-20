@@ -75,23 +75,23 @@ func HandleAssets(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleRoot is a handler for the / page
-func HandleSettings(w http.ResponseWriter, r *http.Request) {
-	HandleStuff(w, r, "/")
+func HandleRoot(w http.ResponseWriter, r *http.Request) {
+	HandleStuff(w, r, "index")
 }
 
 // HandleSettings is a handler for the /settings page
 func HandleSettings(w http.ResponseWriter, r *http.Request) {
-	HandleStuff(w, r, "/settings")
+	HandleStuff(w, r, "settings")
 }
 
 // HandleCreate is a handler for the /create page
 func HandleCreate(w http.ResponseWriter, r *http.Request) {
-	HandleStuff(w, r, "/create")
+	HandleStuff(w, r, "create")
 }
 
 // HandleMe is a handler for the /me page
 func HandleMe(w http.ResponseWriter, r *http.Request) {
-	HandleStuff(w, r, "/me")
+	HandleStuff(w, r, "me")
 }
 
 // NoAccess is a redirect to the noaccess page
