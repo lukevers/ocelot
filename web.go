@@ -42,8 +42,9 @@ func Serve(config *Config) {
 	}
 }
 
-// HandleRoot is the handler for the general / page
-func HandleRoot(w http.ResponseWriter, r *http.Request) {
+
+// HandleStuff is a general func that gets called by the handlers
+func HandleStuff(w http.ResponseWriter, r *http.Request, t string) {
 	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
 		l.Noticef("SplitHostPort error: %s", err)
@@ -56,7 +57,7 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 	if VerifyNetmask(Netmask, r.RemoteAddr) {
 		exists, user := VerifiedUser(r.RemoteAddr)
 		if exists {
-			templates.ExecuteTemplate(w, "index", &user)
+			templates.ExecuteTemplate(w, t, &user)
 		} else {
 			// Redirect to the signup page
 			SignUp(w, r.RemoteAddr, templates)
@@ -71,6 +72,41 @@ func HandleRoot(w http.ResponseWriter, r *http.Request) {
 // assets directory.
 func HandleAssets(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, r.URL.Path[1:])
+}
+
+// HandleRoot is a handler for the / page
+func HandleSettings(w http.ResponseWriter, r *http.Request) {
+	HandleStuff(w, r, "/")
+}
+
+// HandleSettings is a handler for the /settings page
+func HandleSettings(w http.ResponseWriter, r *http.Request) {
+	HandleStuff(w, r, "/settings")
+}
+
+// HandleCreate is a handler for the /create page
+func HandleCreate(w http.ResponseWriter, r *http.Request) {
+	HandleStuff(w, r, "/create")
+}
+
+// HandleMe is a handler for the /me page
+func HandleMe(w http.ResponseWriter, r *http.Request) {
+	HandleStuff(w, r, "/me")
+}
+
+// NoAccess is a redirect to the noaccess page
+func NoAccess(w http.ResponseWriter, templates *template.Template) {
+	templates.ExecuteTemplate(w, "nohype", nil)
+}
+
+// SignUp is a redirect to the signup page
+func SignUp(w http.ResponseWriter, address string, templates *template.Template) {
+	// Create a temporary struct to put the address into the form
+	// to create an account.
+	type Address struct {
+		Address string
+	}
+	templates.ExecuteTemplate(w, "signup", &Address{Address: address})
 }
 
 // HandleNewUser is a handler that creates a new user when there is a
@@ -115,97 +151,4 @@ func HandleNewUser(w http.ResponseWriter, r *http.Request) {
 			l.Infof("User %s added to database", u.Name)
 		}
 	}
-}
-
-// HandleSettings is the handler for the /settings page
-func HandleSettings(w http.ResponseWriter, r *http.Request) {
-	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		l.Noticef("SplitHostPort error: %s", err)
-	}
-	
-	templates = template.Must(template.ParseGlob("templates/*"))
-	
-	// If we are not signed in and on Hyperboria send to the
-	// signup page. If we are not signed in and not on Hyperboria
-	// send to the no access page.
-	if VerifyNetmask(Netmask, r.RemoteAddr) {
-		exists, user := VerifiedUser(r.RemoteAddr)
-		if exists {
-			templates.ExecuteTemplate(w, "settings", &user)
-		} else {
-			// Redirect to signup page
-			SignUp(w, r.RemoteAddr, templates)
-		}
-	} else {
-		// Redirect to no access page
-		NoAccess(w, templates)
-	}
-}
-
-// HandleMe is the handler for the /me page
-func HandleMe(w http.ResponseWriter, r *http.Request) {
-	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		l.Noticef("SplitHostPort error: %s", err)
-	}
-
-	templates = template.Must(template.ParseGlob("templates/*"))
-
-	// If we are not signed in and on Hyperboria send to the
-	// signup page. If we are not signed in and not on Hyperboria
-	// send to the no access page.
-	if VerifyNetmask(Netmask, r.RemoteAddr) {
-		exists, user := VerifiedUser(r.RemoteAddr)
-		if exists {
-			templates.ExecuteTemplate(w, "me", &user)
-		} else {
-			// Redirect to signup page
-			SignUp(w, r.RemoteAddr, templates)
-		}
-	} else {
-		// Redirect to no access page
-		NoAccess(w, templates)
-	}
-}
-
-// HandleCreate is the handler for the /create page
-func HandleCreate(w http.ResponseWriter, r *http.Request) {
-	r.RemoteAddr, _, err = net.SplitHostPort(r.RemoteAddr)
-	if err != nil {
-		l.Noticef("SplitHostPort error: %s", err)
-	}
-	
-	templates = template.Must(template.ParseGlob("templates/*"))
-	
-	// If we are not signed in and on Hyperboria send to the
-	// signup page. If we are not signed in and not on Hyperboria
-	// send to the no access page.
-	if VerifyNetmask(Netmask, r.RemoteAddr) {
-		exists, user := VerifiedUser(r.RemoteAddr)
-		if exists {
-			templates.ExecuteTemplate(w, "create", &user)
-		} else {
-			// Redirect to signup page
-			SignUp(w, r.RemoteAddr, templates)
-		}
-	} else {
-		// Redirect to no access page
-		NoAccess(w, templates)
-	}
-}
-
-// SignUp is a redirect to the signup page
-func SignUp(w http.ResponseWriter, address string, templates *template.Template) {
-	// Create a temporary struct to put the address into the form
-	// to create an account.
-	type Address struct {
-		Address string
-	}
-	templates.ExecuteTemplate(w, "signup", &Address{Address: address})
-}
-
-// NoAccess is a redirect to the noaccess page
-func NoAccess(w http.ResponseWriter, templates *template.Template) {
-	templates.ExecuteTemplate(w, "nohype", nil)
 }
