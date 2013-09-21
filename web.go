@@ -23,6 +23,9 @@ func Serve(config *Config) {
 		l.Fatalf("Could not parse netmask error: %s", err)
 	}
 	
+	// Compile templates
+	templates = template.Must(template.ParseGlob("templates/*"))
+
 	// Handle normal pages
 	http.HandleFunc("/", HandleRoot)
 	http.HandleFunc("/assets/", HandleAssets)
@@ -49,8 +52,6 @@ func HandleStuff(w http.ResponseWriter, r *http.Request, t string) {
 	if err != nil {
 		l.Noticef("SplitHostPort error: %s", err)
 	}
-	
-	templates = template.Must(template.ParseGlob("templates/*"))
 
 	// If we are not on Hyperboria, send them to the "nohype"
 	// page. If we are, check if we are a user yet.
